@@ -5,18 +5,25 @@ import plotly.plotly as py
 import plotly.figure_factory as ff
 import matplotlib.pyplot as plt
 import matplotlib
+
 #matplotlib.style.use('ggplot')
 
 #read data
 df1=pd.read_csv("file1.csv")
 df2=pd.read_csv("file2.csv")
 #df1['New']=df1['A']+df2['B']
+print( np.unique(df1['B'], return_inverse=True))
 
-print(df1)
 
 #spot check data, works well with small amounts of data
 print(df1.sum())
 print(df2.sum())
+
+df1['y'] = np.where(df1['B'] < .5 , 1, np.where(df1['B'] > .5, -1, 0))
+df2['y'] = np.where(df2['B'] < .5 , 1, np.where(df2['B'] > .5, -1, 0))
+
+
+print(df1)
 
 #Calculate difference
 if df1.sum().sum()==df2.sum().sum():
