@@ -10,6 +10,9 @@ import matplotlib
 #read data
 df1=pd.read_csv("file1.csv")
 df2=pd.read_csv("file2.csv")
+#df1['New']=df1['A']+df2['B']
+
+print(df1)
 
 #spot check data, works well with small amounts of data
 print(df1.sum())
@@ -17,9 +20,9 @@ print(df2.sum())
 
 #Calculate difference
 if df1.sum().sum()==df2.sum().sum():
-    print("They are the same")
+    print("Check passed: They are the same.")
 else:
-    print("They are different by "+str((abs(df1.sum().sum()-df2.sum().sum()))/df2.sum().sum()*100)+" %")
+    print("Check failed: They are different by "+str((abs(df1.sum().sum()-df2.sum().sum()))/df2.sum().sum()*100)+"%.")
 #df_1=np.reshape(np.array(df1), (-1,1))
 #df_2=np.reshape(np.array(df2), (-1,1))
 #data=pd.DataFrame({'first':df_1.tolist(), 'second':df_2.tolist()})
