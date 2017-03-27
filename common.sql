@@ -1,4 +1,9 @@
 
+SELECT ThruFsclMth , HrNum,ProdAct, OTAAct,ResPosRank,ResPosTotalTech,ResTCRank,ResTCTotalTech,CBPosRank,CBPosTotalTech,
+CBTCRank,CBTCTotalTech,ProdRank,ProdTotalTech,OTARank,OTATotalTech,ResPosAct,ResTCAct,CBPosAct,CBTCAct,
+ResPosPnts,ResTcPnts,CBPosPnts,CBTCPnts,ProdPnts,OTAPnts
+FROM 
+XBITBLSV.RPTBBTScrcrdTechMthLgcy
 
 
 select *
