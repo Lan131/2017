@@ -1,5 +1,7 @@
 
+# coding: utf-8
 
+# In[25]:
 
 import pandas as pd
 import numpy as np
@@ -7,6 +9,7 @@ import matplotlib.pyplot as plt
 
 from sklearn.datasets import make_classification
 from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.preprocessing import Imputer
 
 
 
@@ -19,7 +22,17 @@ y=data1['Fail']
 
 
 
+imp = Imputer(missing_values='NaN', strategy='mean', axis=0)
+imp.fit_transform(X)
+
+
+
+
+X=pd.DataFrame(X)
 X.head()
+
+
+
 
 y.head()
 
@@ -66,6 +79,8 @@ plt.bar(range(X.shape[1]), importances[indices],
 plt.xticks(range(X.shape[1]), indices)
 plt.xlim([-1, X.shape[1]])
 plt.show()
+
+
 
 
 
