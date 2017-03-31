@@ -25,3 +25,10 @@ SELECT TOP 10  *
 FROM XBITBLSV.RptBBTScrcrdTechMth
 
 WHERE CurrScrd = 1 AND HRNum = '1511686'
+
+
+
+SELECT ColumnName
+FROM DBC.COLUMNS
+WHERE DatabaseName='XBITBLSv' 
+AND TABLENAME='FctSysTechWOJobMthMbl ';
