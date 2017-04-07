@@ -140,3 +140,15 @@ SELECT ColumnName, 'FctWOJob'
 		
 
 
+SELECT  G.FullNm AS Customer_N,F.ComplDttm AS Comp_Date,
+F.OrdNum AS OrdN,E.AddrLine1 AS AddLine, 
+D.CalDt  AS SCH_Date,C.WOJobClassDesc AS Work_order_status , H.LastNm||', '|| H.FirstNm 
+AS Tech_N,H.TitlNm AS TitlN
+FROM
+XBITBLSV.FctWOJob AS A 
+INNER JOIN XBITBLSV.DimWOJobClass AS C ON A.DimWOJobClassSk=C.DimWOJobClassSk
+INNER JOIN XBITBLSV.DimDate AS D ON D.DimDateSk=A.WOJobCmpltDimDtSk
+INNER JOIN XBITBLSV.DimSVCUnit AS E  ON E.DimSvcUnitSk=A.DimSVCUnitSk
+INNER JOIN XBITBLSV.DimEmployee AS H ON A.WOJobTechDimEmployeeSk=H.DimEmployeeSk 
+INNER JOIN XBITBLSV.DimAcct AS G ON A.DimAcctSk=G.DimAcctSk 
+INNER JOIN XBITBLSV.DimWOJob AS F ON A.DimWOJobSk=F.DimWOJobSk
