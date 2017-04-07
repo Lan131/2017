@@ -74,3 +74,69 @@ XBIAQINTRPTV.RptBBTScrcrdSupMthLgcy AS B
 	ON A.HrNum=B.HrNum
 WHERE  A.MtrcTmPeriod=B.MtrcTmPeriod 
 ORDER BY A.HrNum 
+
+
+SELECT HrNum,  resPosCnt, restccnt, cbposcnt, cbtccnt FROM  XBIAQINTRPTV.RptBBTScrcrdSupMthLgcy  
+where 1=1
+--and HrNum = 1000022
+and MTRCTMPeriod = 'Month'
+
+minus
+
+Select Lvl1mgmtID, SUM(ResPosCnt), sum(restccnt), SUM(cbposcnt), SUM(cbtccnt) FROM XBIAQINTRPTV.FctBBTScrcrdTechSumDlyLgcy 
+where 1=1
+--and Lvl1mgmtID = 1000022
+and scmonthyear = 201702
+group by 1
+;
+
+SELECT ColumnName, 'FctWOJob'
+			FROM DBC.COLUMNS
+			WHERE DatabaseName='XBITBLSv' 
+			AND TABLENAME='FctWOJob'
+
+			UNION 
+			SELECT ColumnName, 'DimWOJobStat'
+			FROM DBC.COLUMNS
+			WHERE DatabaseName='XBITBLSv' 
+			AND TABLENAME='DimWOJobStat'
+			
+
+			UNION 
+			SELECT ColumnName, 'DimWOJobClass'
+			FROM DBC.COLUMNS
+			WHERE DatabaseName='XBITBLSv' 
+			AND TABLENAME='DimWOJobClass'
+
+			UNION 
+			SELECT ColumnName, 'DimDate'
+			FROM DBC.COLUMNS
+			WHERE DatabaseName='XBITBLSv' 
+			AND TABLENAME='DimDate'
+
+			UNION 
+			SELECT ColumnName, 'DimSVCUnit'
+			FROM DBC.COLUMNS
+			WHERE DatabaseName='XBITBLSv' 
+			AND TABLENAME='DimSVCUnit'
+
+			UNION 
+			SELECT ColumnName, 'DimWOJob'
+			FROM DBC.COLUMNS
+			WHERE DatabaseName='XBITBLSv' 
+			AND TABLENAME='DimWOJob'
+
+			UNION 
+			SELECT ColumnName, 'DimAcct'
+			FROM DBC.COLUMNS
+			WHERE DatabaseName='XBITBLSv' 
+			AND TABLENAME='DimAcct'
+
+			UNION 
+			SELECT ColumnName, 'DimEmployee'
+			FROM DBC.COLUMNS
+			WHERE DatabaseName='XBITBLSv' 
+			AND TABLENAME='DimEmployee'
+		
+
+
