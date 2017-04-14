@@ -50,6 +50,7 @@ tokenize_1=tokenize(quest$Q1)
 tokenize_2=tokenize(quest$Q2)
 response=as.character(as.h2o(quest$Flag))
 
+w2v.model <- h2o.word2vec(h2o.rbind(tokenize_1,tokenize_2), sent_sample_rate = 0, epochs = 10)
 
 Q1_vec <- h2o.transform(w2v, tokenize_1, aggregate_method = "AVERAGE")
 Q2_vec <- h2o.transform(w2v, tokenize_2, aggregate_method = "AVERAGE")
