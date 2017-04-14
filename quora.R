@@ -22,8 +22,9 @@ h2o.removeAll()
 
 
 quest=h2o.importFile("questions.csv",header=F,
-                     col.names = c("idx","Q1","Q2","Flag"), 
-                     col.types = c("int", "String","String","String"))
+                     col.names = c("Q","Flag"), 
+                     col.types = c("String","String"))
+
 
 tokenize=function(column)
 {
@@ -45,21 +46,18 @@ tokenize=function(column)
 
 
 
-tokenize_1=tokenize(quest$Q1)
-tokenize_2=tokenize(quest$Q2)
+tokenize_1=tokenize(quest$Q)
 response=as.factor(as.h2o(quest$Flag))
 tokenize_1=tokenize_1[-1,]
-tokenize_2=tokenize_2[-1,]
 response=response[-1,]
 
-w2v.model <- h2o.word2vec(h2o.rbind(tokenize_1,tokenize_2), init_learning_rate=.1, epochs = 2)
+w2v.model <- h2o.word2vec(tokenize_1, init_learning_rate=.1, epochs = 2)
 
-Q1_vec <- h2o.transform(w2v.model, tokenize_1, aggregate_method = "AVERAGE")
-Q2_vec <- h2o.transform(w2v.model, tokenize_2, aggregate_method = "AVERAGE")
-words=h2o.cbind(Q1_vec,Q2_vec )
+Q_vec <- h2o.transform(w2v.model, tokenize_1, aggregate_method = "AVERAGE")
+Q_vec=Q_vec[-1,]
 
-data <- h2o.cbind(words,response)
-write.csv(as.data.frame(data),"workaround.csv")
+data <- h2o.cbind(Q_vec,response)
+#write.csv(as.data.frame(data),"workaround.csv")
 splits = h2o.splitFrame(data, .8, seed=1234) #split into train and test
 train  = h2o.assign(splits[[1]], "train.hex") # 80%
 valid  = h2o.assign(splits[[2]], "valid.hex") # 20%
