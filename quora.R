@@ -15,40 +15,39 @@ if (! ("utils" %in% rownames(installed.packages()))) { install.packages("utils")
 # Now we download, install and initialize the H2O package for R.
 install.packages("h2o", type="source", repos=(c("http://h2o-release.s3.amazonaws.com/h2o/master/3842/R")))
 library(h2o)
-localH2O = h2o.init(nthreads=-1,enable_assertions = F)
-summary(quest)
+h2o.shutdown(prompt=F)
+
+localH2O = h2o.init(nthreads=-1)
+h2o.removeAll()
+
 
 quest=h2o.importFile("questions.csv",header=F,
-                    col.names = c("idx","Q1","Q2","Flag"), 
+                     col.names = c("idx","Q1","Q2","Flag"), 
                      col.types = c("int", "String","String","String"))
 
 tokenize=function(column)
 {
-      tokenized <- h2o.tokenize(column, "\\\\W+")
-      
-      
-      tokenized.lower <- h2o.tolower(tokenized)
-      # remove short words (less than 2 characters)
-      tokenized.lengths <- h2o.nchar(tokenized.lower)
-      tokenized.filtered <- tokenized.lower[is.na(tokenized.lengths) || tokenized.lengths >= 2,]
-      # remove words that contain numbers
-      tokenized.words <- tokenized.filtered[h2o.grep("[0-9]", tokenized.filtered, invert = TRUE, output.logical = TRUE),]
-      
-      # remove stop words
-      tokenized.words[is.na(tokenized.words) || (! tokenized.words %in% c("?","Who","What","Where","When","Why","How")),]
-      return(tokenized.words)
+  tokenized <- h2o.tokenize(column, " ")
+  
+  
+  tokenized.lower <- h2o.tolower(tokenized)
+  # remove short words (less than 2 characters)
+  tokenized.lengths <- h2o.nchar(tokenized.lower)
+  tokenized.filtered <- tokenized.lower[is.na(tokenized.lengths) || tokenized.lengths >= 2,]
+  # remove words that contain numbers
+  tokenized.words <- tokenized.filtered[h2o.grep("[0-9]", tokenized.filtered, invert = TRUE, output.logical = TRUE),]
+  
+  # remove stop words
+  tokenized.words[is.na(tokenized.words) || (! tokenized.words %in% c("?","Who","What","Where","When","Why","How")),]
+  return(tokenized.words)
 }
 
 
 
-  F_t <- tokenize(as.character(as.h2o(quest$Flag)))
-  job.title.vec <- h2o.transform(w2v, words, aggregate_method = "AVERAGE")
-  h2o.predict(gbm, job.title.vec)
-
 
 tokenize_1=tokenize(quest$Q1)
 tokenize_2=tokenize(quest$Q2)
-response=as.character(as.h2o(quest$Flag))
+response=as.factor(as.h2o(quest$Flag))
 tokenize_1=tokenize_1[-1,]
 tokenize_2=tokenize_2[-1,]
 response=response[-1,]
@@ -60,8 +59,11 @@ Q2_vec <- h2o.transform(w2v.model, tokenize_2, aggregate_method = "AVERAGE")
 words=h2o.cbind(Q1_vec,Q2_vec )
 
 data <- h2o.cbind(words,response)
-data.split <- h2o.splitFrame(data, ratios = 0.8)
+write.csv(as.data.frame(data),"workaround.csv")
+splits = h2o.splitFrame(data, .8, seed=1234) #split into train and test
+train  = h2o.assign(splits[[1]], "train.hex") # 80%
+valid  = h2o.assign(splits[[2]], "valid.hex") # 20%
 
-print("Build a basic GBM model")
-gbm.model <- h2o.gbm(x = names(job.title.vecs), y = "category",
+
+gbm.model <- h2o.gbm(x = names(words), y = "Flag",
                      training_frame = data.split[[1]], validation_frame = data.split[[2]])
