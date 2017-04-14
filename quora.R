@@ -63,5 +63,7 @@ train  = h2o.assign(splits[[1]], "train.hex") # 80%
 valid  = h2o.assign(splits[[2]], "valid.hex") # 20%
 
 
-gbm.model <- h2o.gbm(x = names(words), y = "Flag",
-                     training_frame = data.split[[1]], validation_frame = data.split[[2]])
+gbm.model <- h2o.gbm(x = names(Q_vec), y = "Flag",
+                     training_frame = train, validation_frame = valid)
+
+plot(gbm.model)
