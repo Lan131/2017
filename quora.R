@@ -15,7 +15,7 @@ if (! ("utils" %in% rownames(installed.packages()))) { install.packages("utils")
 # Now we download, install and initialize the H2O package for R.
 install.packages("h2o", type="source", repos=(c("http://h2o-release.s3.amazonaws.com/h2o/master/3842/R")))
 library(h2o)
-localH2O = h2o.init(nthreads=-1)
+localH2O = h2o.init(nthreads=-1,enable_assertions = F)
 summary(quest)
 
 quest=h2o.importFile("questions.csv",header=F,
@@ -24,7 +24,7 @@ quest=h2o.importFile("questions.csv",header=F,
 
 tokenize=function(column)
 {
-      tokenized <- h2o.tokenize(column, " ")
+      tokenized <- h2o.tokenize(column, "\\\\W+")
       
       
       tokenized.lower <- h2o.tolower(tokenized)
@@ -49,8 +49,19 @@ tokenize=function(column)
 tokenize_1=tokenize(quest$Q1)
 tokenize_2=tokenize(quest$Q2)
 response=as.character(as.h2o(quest$Flag))
+tokenize_1=tokenize_1[-1,]
+tokenize_2=tokenize_2[-1,]
+response=response[-1,]
 
-w2v.model <- h2o.word2vec(h2o.rbind(tokenize_1,tokenize_2), sent_sample_rate = 0, epochs = 10)
+w2v.model <- h2o.word2vec(h2o.rbind(tokenize_1,tokenize_2), init_learning_rate=.1, epochs = 2)
 
-Q1_vec <- h2o.transform(w2v, tokenize_1, aggregate_method = "AVERAGE")
-Q2_vec <- h2o.transform(w2v, tokenize_2, aggregate_method = "AVERAGE")
+Q1_vec <- h2o.transform(w2v.model, tokenize_1, aggregate_method = "AVERAGE")
+Q2_vec <- h2o.transform(w2v.model, tokenize_2, aggregate_method = "AVERAGE")
+words=h2o.cbind(Q1_vec,Q2_vec )
+
+data <- h2o.cbind(words,response)
+data.split <- h2o.splitFrame(data, ratios = 0.8)
+
+print("Build a basic GBM model")
+gbm.model <- h2o.gbm(x = names(job.title.vecs), y = "category",
+                     training_frame = data.split[[1]], validation_frame = data.split[[2]])
