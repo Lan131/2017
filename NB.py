@@ -12,18 +12,18 @@ url = 'http://vincentarelbundock.github.com/Rdatasets/csv/COUNT/medpar.csv'
 data=pd.read_csv(url)
 
 
-
 # In[2]:
 
 X=data[['type2', 'type3','hmo','white']].astype(np.float64)
 Y=data[['los']].astype(np.float32)
 
 
-# In[3]:
-
+# In[45]:
 
 #X,y,data are all pandas dataframes
-def NB(X,y,data):
+def NB(X,y,data,early_stopping_rounds=3,stopping_threshold=.00001,max_steps=1000):
+    
+    #Define variables and session
     X = pd.concat([pd.Series(np.ones(len(X))),X.reset_index(drop=True)], axis=1)
     y=Y.as_matrix()
     size=X.columns.shape[0]
@@ -38,34 +38,54 @@ def NB(X,y,data):
     sess = tf.Session()
     sess.run(init)
     
-    
+    #Implement Early Stopping. If it doesn't imporove more than
     prior=100000000
     current=100
     n=1
     Flag=0
-    
-    while( (max(abs(prior),abs(current))-min(abs(prior),abs(current)))/max(abs(prior),abs(current))>.00001 and Flag<3):
-        if((max(abs(prior),abs(current))-min(abs(prior),abs(current)))/max(abs(prior),abs(current))>.00001):
-            Flag=0
+    #Open tensorflow session
+    while( (max(abs(prior),abs(current))-min(abs(prior),abs(current)))/max(abs(prior),abs(current))>stopping_threshold and Flag<early_stopping_rounds):
+        if((max(abs(prior),abs(current))-min(abs(prior),abs(current)))/max(abs(prior),abs(current))>stopping_threshold):
+            Flag=0 #If the loss doesn't imporove by .001% three times in a row exit.
         prior=current
         sess.run(train)
-        print("The value of the MLE is the absolute value of ",sess.run(loss))
+        if(n==1):
+            print("The value of the likelihood function at the MLE is the absolute value of ",sess.run(loss))
+        else:
+            print(sess.run(loss))
         current=sess.run(loss)        
         n=n+1
-        if((max(abs(prior),abs(current))-min(abs(prior),abs(current)))/max(abs(prior),abs(current))<=.00001):
-            print("Steps:",n,"\nBeta vector: ",sess.run(B),"\nAlpha:", sess.run(a))
+        if((max(abs(prior),abs(current))-min(abs(prior),abs(current)))/max(abs(prior),abs(current))<=stopping_threshold):
+            print("Steps:",n,"\nBeta vector:\n",sess.run(B),"\nAlpha:", sess.run(a))
             Flag=Flag+1
-        if(n>=1000):
+        if(n>=max_steps):  #run a max of 1000 times
             print(n,sess.run(B), sess.run(a))
             break
+    #Calculate and return AIC
+    AIC=2*X.columns.shape[0]+1-2*sess.run(loss)
+    print("AIC:", AIC)
+    
+    #Find Hessian
+    #hessian function
+
+    #x = B=tf.Variable(tf.random_normal([size]))
+    #init = tf.global_variables_initializer()
+    #sess = tf.Session()
+    #sess.run(init)
+    #tf.hessians(L,x)
+                                                                                
+ 
 
 
-# In[4]:
+
 
 NB(X,Y,data)
 
 
-# In[ ]:
+
+
+
+
 
 #http://stackoverflow.com/questions/35266370/tensorflow-compute-hessian-matrix-and-higher-order-derivatives
 #http://www.mathematica-journal.com/2013/06/negative-binomial-regression/
