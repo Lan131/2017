@@ -102,6 +102,7 @@ print("AIC:",res.aic)
 
 # In[3]:
 
+
 #Load data
 import tensorflow as tf
 import pandas as pd
@@ -117,12 +118,11 @@ Y=data[['los']].astype(np.float32)
 y=Y.as_matrix()
 size=X.columns.shape
 x=X.as_matrix().astype(np.float32)
-B=tf.Variable(tf.random_normal([4,1]))
+B=tf.Variable(tf.random_normal([5,1]))
 a = tf.Variable(tf.random_uniform([1]))
-L=y * tf.log(a)+y*(tf.matmul(x,B))*tf.log(1+tf.to_float(a)*tf.exp(tf.matmul(x,B)))+tf.lgamma(y+1/a)-tf.lgamma(1/a)                                                                                                   
+L=y * tf.log(a)+y*(tf.matmul(x,B))-(y+1/a)*tf.log(1+tf.to_float(a)*tf.exp(tf.matmul(x,B)))+tf.lgamma(y+1/a)-tf.lgamma(1/a)                                                                                                   
 
 
-# In[ ]:
 
 loss = tf.reduce_sum(-L)
 optimizer = tf.train.AdamOptimizer(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-08)
@@ -132,10 +132,9 @@ sess = tf.Session()
 sess.run(init)
 
 
-# In[ ]:
 
 
-for step in range(100):
+for step in range(1000):
      sess.run(train)
      print(step, sess.run(B), sess.run(a))
      print("The value of the MLE is the absolute value of ",sess.run(loss))
@@ -143,18 +142,6 @@ for step in range(100):
     
     
 
-
-# In[ ]:
-
-
-
-
-# In[ ]:
-
-
-
-
-# In[ ]:
 
 
 
