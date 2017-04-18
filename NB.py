@@ -15,7 +15,6 @@ Y=data[['los']].astype(np.float32)
 
 
 
-#X,y,data are all pandas dataframes
 def NB(X,y,data,early_stopping_rounds=3,stopping_threshold=.00001,max_steps=1000):
     
     #Define variables and session
@@ -69,20 +68,16 @@ def NB(X,y,data,early_stopping_rounds=3,stopping_threshold=.00001,max_steps=1000
 
     x = tf.Variable(tf.random_normal([1,size]))
     y = tf.Variable(tf.random_uniform([1]))
-    loss = y * tf.log(sess.run(a))+y*(tf.matmul(x,sess.run(B)))-(y+1/sess.run(a))*tf.log(1+tf.to_float(sess.run(a))*tf.exp(tf.matmul(x,sess.run(B))))+tf.lgamma(y+1/sess.run(a))-tf.lgamma(1/sess.run(a)) 
+    loss = (y * tf.log(sess.run(a))+y*(tf.matmul(x,sess.run(B)))-(y+1/sess.run(a))*tf.log(1+tf.to_float(sess.run(a))*tf.exp(tf.matmul(x,sess.run(B))))+tf.lgamma(y+1/sess.run(a))-tf.lgamma(1/sess.run(a))) 
     grads = tf.gradients([loss], [x, y])
     hess0 = tf.gradients([grads[0]], [x])
     sess = tf.InteractiveSession()
     sess.run(tf.global_variables_initializer())
-    print("Variance of predictors\n:",sess.run(hess0))                                                       
- 
-
-
-
+    print("Variance of predictors\n:",sess.run(hess0))
+    var=np.array(sess.run(hess0))
+    return(var)
 
 NB(X,Y,data)
-
-
 
 
 
