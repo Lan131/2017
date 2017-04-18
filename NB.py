@@ -1,8 +1,4 @@
 
-# coding: utf-8
-
-
-
 
 #Load data
 import tensorflow as tf
