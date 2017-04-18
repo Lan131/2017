@@ -1,7 +1,7 @@
 
 # coding: utf-8
 
-# In[1]:
+
 
 
 #Load data
@@ -12,13 +12,12 @@ url = 'http://vincentarelbundock.github.com/Rdatasets/csv/COUNT/medpar.csv'
 data=pd.read_csv(url)
 
 
-# In[2]:
+
 
 X=data[['type2', 'type3','hmo','white']].astype(np.float64)
 Y=data[['los']].astype(np.float32)
 
 
-# In[45]:
 
 #X,y,data are all pandas dataframes
 def NB(X,y,data,early_stopping_rounds=3,stopping_threshold=.00001,max_steps=1000):
@@ -66,14 +65,20 @@ def NB(X,y,data,early_stopping_rounds=3,stopping_threshold=.00001,max_steps=1000
     print("AIC:", AIC)
     
     #Find Hessian
-    #hessian function
 
-    #x = B=tf.Variable(tf.random_normal([size]))
-    #init = tf.global_variables_initializer()
-    #sess = tf.Session()
-    #sess.run(init)
-    #tf.hessians(L,x)
-                                                                                
+    def replace_none_with_zero(l):
+      return [0 if i==None else i for i in l] 
+
+    tf.reset_default_graph()
+
+    x = tf.Variable(tf.random_normal([1,size]))
+    y = tf.Variable(tf.random_uniform([1]))
+    loss = y * tf.log(sess.run(a))+y*(tf.matmul(x,sess.run(B)))-(y+1/sess.run(a))*tf.log(1+tf.to_float(sess.run(a))*tf.exp(tf.matmul(x,sess.run(B))))+tf.lgamma(y+1/sess.run(a))-tf.lgamma(1/sess.run(a)) 
+    grads = tf.gradients([loss], [x, y])
+    hess0 = tf.gradients([grads[0]], [x])
+    sess = tf.InteractiveSession()
+    sess.run(tf.global_variables_initializer())
+    print("Variance of predictors\n:",sess.run(hess0))                                                       
  
 
 
@@ -91,7 +96,6 @@ NB(X,Y,data)
 #http://www.mathematica-journal.com/2013/06/negative-binomial-regression/
 
 
-# In[ ]:
 
 
 
