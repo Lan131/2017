@@ -1,20 +1,16 @@
 
-
-#Load data
 import tensorflow as tf
 import pandas as pd
 import numpy as np
-url = 'http://vincentarelbundock.github.com/Rdatasets/csv/COUNT/medpar.csv'
-data=pd.read_csv(url)
+from scipy.special import erf
+import matplotlib as plt
+from IPython.display import display
 
 
 
 
-X=data[['type2', 'type3','hmo','white']].astype(np.float64)
-Y=data[['los']].astype(np.float32)
 
-
-
+#X,y,data are all pandas dataframes
 def NB(X,y,data,early_stopping_rounds=3,stopping_threshold=.00001,max_steps=1000):
     
     #Define variables and session
@@ -29,7 +25,7 @@ def NB(X,y,data,early_stopping_rounds=3,stopping_threshold=.00001,max_steps=1000
     optimizer = tf.train.AdamOptimizer(learning_rate=0.1, beta1=0.9, beta2=0.999, epsilon=1e-08)
     train = optimizer.minimize(loss)
     init = tf.global_variables_initializer()
-    sess = tf.Session()
+    sess = tf.Session(config=tf.ConfigProto(log_device_placement=True))
     sess.run(init)
     
     #Implement Early Stopping. If it doesn't imporove more than
@@ -50,14 +46,13 @@ def NB(X,y,data,early_stopping_rounds=3,stopping_threshold=.00001,max_steps=1000
         current=sess.run(loss)        
         n=n+1
         if((max(abs(prior),abs(current))-min(abs(prior),abs(current)))/max(abs(prior),abs(current))<=stopping_threshold):
-            print("Steps:",n,"\nBeta vector:\n",sess.run(B),"\nAlpha:", sess.run(a))
             Flag=Flag+1
         if(n>=max_steps):  #run a max of 1000 times
-            print(n,sess.run(B), sess.run(a))
             break
+    Beta=np.array(sess.run(B))
+    alpha=np.array(sess.run(a))
     #Calculate and return AIC
     AIC=2*X.columns.shape[0]+1-2*sess.run(loss)
-    print("AIC:", AIC)
     
     #Find Hessian
 
@@ -73,11 +68,31 @@ def NB(X,y,data,early_stopping_rounds=3,stopping_threshold=.00001,max_steps=1000
     hess0 = tf.gradients([grads[0]], [x])
     sess = tf.InteractiveSession()
     sess.run(tf.global_variables_initializer())
-    print("Variance of predictors\n:",sess.run(hess0))
     var=np.array(sess.run(hess0))
-    return(var)
 
-NB(X,Y,data)
+    result = pd.Series(Beta.tolist())
+    labels = ['$\\beta$']
+    results = pd.DataFrame(result, columns=labels)
+    results['St Err']=pd.Series(1/np.sqrt(abs(var.flatten())))
+    results['Z']= results['$\\beta$']/results['St Err'][0]
+    
+    def phi(x):
+
+        return (1.0 + erf(x / np.sqrt(2.0))) / 2.0
+
+    results['$p$']=1-phi(results['Z'].astype(float))
+    results['$\\alpha$']=pd.Series(alpha.tolist())
+    results['AIC']=pd.Series(AIC.tolist())
+    return(results)
+
+
+
+if __name__ == "__main__":
+    url = 'http://vincentarelbundock.github.com/Rdatasets/csv/COUNT/medpar.csv'
+    data=pd.read_csv(url)
+    X=data[['type2', 'type3','hmo','white']].astype(np.float64)
+    Y=data[['los']].astype(np.float32)
+    display(NB(X,Y,data))
 
 
 
