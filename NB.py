@@ -66,6 +66,8 @@ def NB(X,y,data,early_stopping_rounds=3,stopping_threshold=.00001,max_steps=1000
     loss = (y * tf.log(sess.run(a))+y*(tf.matmul(x,sess.run(B)))-(y+1/sess.run(a))*tf.log(1+tf.to_float(sess.run(a))*tf.exp(tf.matmul(x,sess.run(B))))+tf.lgamma(y+1/sess.run(a))-tf.lgamma(1/sess.run(a))) 
     grads = tf.gradients([loss], [x, y])
     hess0 = tf.gradients([grads[0]], [x])
+    #hess0 = tf.hessians(tf.reshape(x, loss, name='hessians', colocate_gradients_with_ops=False, gate_gradients=False, aggregation_method=None)
+    #Tensorflow doesn't support multi demensional gradient calculation 
     sess = tf.InteractiveSession()
     sess.run(tf.global_variables_initializer())
     var=np.array(sess.run(hess0))
