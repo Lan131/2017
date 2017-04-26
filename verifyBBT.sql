@@ -140,12 +140,28 @@ WHERE A.HrNum=A.MgrHrNum OR A.HrNum=A.SupHrNum;
 
 
 --check that nobody with less that 2 months gets a QTD scorecard
-SELECT COUNT(B.MtrcTmPeriod),A.MtrcTmPeriod
-FROM XBITBLSV.RptBBTScrcrdTechMthLgcy AS A 
-INNER JOIN  XBITBLSV.RptBBTScrcrdTechMthLgcy AS B
-ON A.HrNum=B.HrNum
-WHERE A.MtrcTmPeriod='QTD' AND B.MtrcTmPeriod='MONTH' 
-HAVING COUNT(B.MtrcTmPeriod)<2
-GROUP BY B.MtrcTmPeriod,A.MtrcTmPeriod;
+SELECT CNT, Tier,idx FROM
+	(	SELECT J.CNT AS CNT, J.Tier AS Tier,J.idx AS idx FROM
+			(SELECT COUNT(B.MtrcTmPeriod) AS CNT, 
+			A.TechScrcrdCurrTier AS Tier,
+			A.MtrcTmPeriod AS H,A.SupHrNum AS idx ,B.MtrcTmPeriod
+			FROM XBITBLSV.RptBBTScrcrdSupMthLgcy AS A 
+			LEFT JOIN  XBITBLSV.RptBBTScrcrdSupMthLgcy AS B 
+			ON A.SupHrNum=B.SupHrNum 
+			WHERE A.MtrcTmPeriod='QTD' AND B.MtrcTmPeriod='MONTH' 
+			GROUP BY A.MtrcTmPeriod,A.SupHrNum,B.MtrcTmPeriod,Tier)
+						AS J
+	WHERE J.CNT<2 )
+		AS Main1 INNER JOIN (
+
+			SELECT COUNT(HrNum) AS HrCt,SupHrNum AS S,TechScrcrdCurrTier AS T FROM
+			XBITBLSV.RptBBTScrcrdTechMthLgcy
+			WHERE OTAQual =0 GROUP BY S ,HrNum,T
+			HAVING HrCt<3			
+			) AS Main2 
+			
+			ON Main2.S=Main1.idx
+WHERE Main2.T=Main1.Tier AND Main1.Tier IS NULL;
+
 
 
