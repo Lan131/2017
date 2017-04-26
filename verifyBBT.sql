@@ -139,4 +139,13 @@ SELECT * FROM XBITBLSV.RptBBTScrcrdTechMthLgcy AS A
 WHERE A.HrNum=A.MgrHrNum OR A.HrNum=A.SupHrNum;
 
 
+--check that nobody with less that 2 months gets a QTD scorecard
+SELECT COUNT(B.MtrcTmPeriod),A.MtrcTmPeriod
+FROM XBITBLSV.RptBBTScrcrdTechMthLgcy AS A 
+INNER JOIN  XBITBLSV.RptBBTScrcrdTechMthLgcy AS B
+ON A.HrNum=B.HrNum
+WHERE A.MtrcTmPeriod='QTD' AND B.MtrcTmPeriod='MONTH' 
+HAVING COUNT(B.MtrcTmPeriod)<2
+GROUP BY B.MtrcTmPeriod,A.MtrcTmPeriod;
+
 
