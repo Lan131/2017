@@ -47,4 +47,10 @@ FROM XBITBLSV.FctSysTechScrcrdConslMth
 GROUP BY KMATierYTD  
 HAVING COUNT(KMATierYTD) >0 
 ORDER BY KMATierYTD ;
-
+--Check roll ups
+SELECT AVG(A.TotNdeHlthScr),AVG(A.TotATTRScr),AVG(A.TotLERptRateScr) ,B.Lvl1MgmtId
+FROM XBITBLSV.FctSysTechScrcrdConslMth AS A INNER JOIN XBITBLSV.DimEmployee AS B
+ON A.DimEmployeeSk=B.DimEmployeeSk
+GROUP BY B.Lvl1MgmtId 
+MINUS
+SELECT B.TotGrnNdScr,B.TotATTRScr,B.TotReptRateScr,B.SupHrNum FROM XBITBLSV.FctSupSysTechScrcrdConslMth AS B;
