@@ -1,4 +1,16 @@
 
+SELECT ColumnName
+			FROM DBC.COLUMNS
+			WHERE DatabaseName='XBITblsv' 
+			AND TABLENAME='FctSysTechScrcrdMth'
+MINUS
+
+SELECT ColumnName
+			FROM DBC.COLUMNS
+			WHERE DatabaseName='DLBIFO' 
+			AND TABLENAME='FctSysTechScrcrdMth_20170523'
+
+
 SELECT ThruFsclMth , HrNum,ProdAct, OTAAct,ResPosRank,ResPosTotalTech,ResTCRank,ResTCTotalTech,CBPosRank,CBPosTotalTech,
 CBTCRank,CBTCTotalTech,ProdRank,ProdTotalTech,OTARank,OTATotalTech,ResPosAct,ResTCAct,CBPosAct,CBTCAct,
 ResPosPnts,ResTcPnts,CBPosPnts,CBTCPnts,ProdPnts,OTAPnts
