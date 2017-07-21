@@ -195,3 +195,9 @@ INTERSECT
 SELECT Lvl1MgmtId FROM  XBITBLSV.DimEmployee AS B
 
 WHERE  B.HrNum NOT IN (SELECT * FROM DLBIFO.CK_UNION_TEC) AND IsCurrFl=1 GROUP BY  Lvl1MgmtId  HAVING COUNT(Lvl1MgmtId )>1) 
+
+
+Select * from XBIUtilsV.BIAllSource 
+where SourceText 
+like '%XDW_V.SPL_RQST_RSN_ENT_CD%';
+
