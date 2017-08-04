@@ -201,3 +201,6 @@ Select * from XBIUtilsV.BIAllSource
 where SourceText 
 like '%XDW_V.SPL_RQST_RSN_ENT_CD%';
 
+
+select CollectTimeStamp, TDWMEstTotalTime from dbc.DBQLogTbl where LogonSource like '%p2738395%';
+
