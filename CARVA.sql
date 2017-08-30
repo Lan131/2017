@@ -282,7 +282,7 @@ delete DLBIFO.LDSpFctSysTechScrcrdMth001;
  	FROM DLBIFO.FctSysTechScrcrdMth a
     	JOIN XBITblsV.DimCalMth b ON (a.DimFsclMthSk=b.DimCalMthSk)
        	 JOIN (SELECT YearNum, MAX(DimCalMthSk) MaxMthSk FROM XBITblsV.DimCalMth GROUP BY 1) c ON (b.YearNum-1=c.YearNum)
-            	LEFT OUTER JOIN DLBIFO.FctSysTechScrcrdMth d ON (a.HrNum=d.HrNum AND c.MaxMthSk=d.DimFsclMthSk)
+            	LEFT OUTER JOIN XbiTblsV.FctSysTechScrcrdMth d ON (a.HrNum=d.HrNum AND c.MaxMthSk=d.DimFsclMthSk)
   	WHERE a.FsclMthSeqNum = COALESCE(211 ,211 - 2) )SRC
   	SET
  	 KMATierPrevYr = SRC.KMATierPrevYr
@@ -321,7 +321,7 @@ delete DLBIFO.LDSpFctSysTechScrcrdMth001;
 		select HrNum,KMARnk,KMATier from XbiTblsV.FctSysTechScrcrdMth where FsclMthSeqNum=211
 	minus
 		select HrNum,KMARnk,KMATier  from DLBIFO.FctSysTechScrcrdMth
---sups
+
 
 
 /*drop table DLBIFO.Dummy_data;
@@ -591,7 +591,7 @@ SELECT	YearNum, MAX(DimCalMthSk) MaxMthSk
 FROM	XBITblsV.DimCalMth 
 GROUP	BY 1) c 
 	ON	(b.YearNum-1=c.YearNum)
-            	LEFT OUTER JOIN DLBIFO.FctSupSysTechScrcrdMth d 
+            	LEFT OUTER JOIN  XbiTblsV.FctSupSysTechScrcrdMth d 
 	ON	(a.SupHrNum=d.SupHrNum 
 	AND	c.MaxMthSk=d.DimFsclMthSk)
   	           WHERE a.FsclMthSeqNum = 211
@@ -643,7 +643,8 @@ GROUP	BY 1) c
 
 select * from DLBIFO.LdSpFctSupSysTechScrcrdMth001;
 select * from 		DLBIFO.FctSupSysTechScrcrdMth;
-		
+
+
 rename table DLBIFO.FctSupSysTechScrcrdMth to DLBIFO.update_carva_sup;
 rename table DLBIFO.FctSysTechScrcrdMth to DLBIFO.update_carva_tech;		
 
