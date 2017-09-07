@@ -1,18 +1,17 @@
 
-/*drop table DLBIFO.Dummy_data;
-create multiset table DLBIFO.Dummy_data as (select * from XbiTblsV.FctSysTechScrcrdMth where DimFsclMthSk=201706 SAMPLE  .05 ) with data;
-select * from DLBIFO.Dummy_data;
-update DLBIFO.Dummy_data
-set KMARnk=null,
-KMATier=null,
-KMATier3Mnth=null,
-KMATierYTD=null,
-KMATierPrevYr=null,
-FsclMthSeqNum=211,
-DimFsclMthSk='201707';*/
+/*rename table dlbifo.FctSysTechScrcrdMth to DLBIFO.Brads_backup;
+rename table dlbifo.FctSupSysTechScrcrdMth to DLBIFO.Brads_backup_sup;*/
+delete from DLBIFO.CARVA;
+delete from DLBIFO.CARVA_sup;
 
+insert into DLBIFO.CARVA
+select * from DLBIFO.Brads_backup;
+
+insert into DLBIFO.CARVA_sup
+select * from DLBIFO.Brads_backup_sup;
 
 drop table DLBIFO.FctSysTechScrcrdMth_rnk;
+
 
 CREATE MULTISET TABLE DLBIFO.FctSysTechScrcrdMth_rnk ,NO FALLBACK ,
      NO BEFORE JOURNAL,
@@ -141,7 +140,7 @@ select * from XbiTblsV.FctSysTechScrcrdMth where HrNum  in ('1512119', '1512631'
 and      FsclMthSeqNum BETWEEN 205 AND 207;
 
 
-
+--sel * from DLBIFO.FctSysTechScrcrdMth_rnk;
 
 update DLBIFO.FctSysTechScrcrdMth_rnk
 set KMARnk=null,
@@ -323,18 +322,8 @@ delete DLBIFO.LDSpFctSysTechScrcrdMth001;
 		select HrNum,KMARnk,KMATier  from DLBIFO.FctSysTechScrcrdMth
 
 
+--sups
 
-/*drop table DLBIFO.Dummy_data;
-create multiset table DLBIFO.Dummy_data as (select * from XbiTblsV.FctSupSysTechScrcrdMth where DimFsclMthSk=201706 SAMPLE  .05 ) with data;
-select * from DLBIFO.Dummy_data;
-update DLBIFO.Dummy_data
-set KMARnk=null,
-KMATier=null,
-KMATier3Mnth=null,
-KMATierYTD=null,
-KMATierPrevYr=null,
-FsclMthSeqNum=211,
-DimFsclMthSk='201707';*/
 
 
 drop table DLBIFO.FctSupSysTechScrcrdMth_rnk;
@@ -467,7 +456,8 @@ CurMthTier=null,
 Prv3MthTier=null,
 YTDKMATier=null,
 YTDKMARnk=null,
-PrevYrTier=null;
+PrevYrTier=null,
+YTDTotScr=null;
 
 
 insert into DLBIFO.FctSupSysTechScrcrdMth
@@ -478,11 +468,15 @@ select * from DLBIFO.FctSupSysTechScrcrdMth_rnk;
 
 
 --delete duplicated SupHrNum
+select count(SupHrNum),SupHrNum,FsclMthSeqNum from DLBIFO.FctSupSysTechScrcrdMth group by SupHrNum,FsclMthSeqNum  having count(SupHrNum)>1;
+
+select * from  DLBIFO.FctSupSysTechScrcrdMth where SupHrNum=1512109;
+
 delete from DLBIFO.FctSupSysTechScrcrdMth
-where DimEmployeeSk=3263254 and DimFsclMthSk=201707 and SupHrNum=1511132;
+where DimEmployeeSk=2294686 and DimFsclMthSk=201707 and SupHrNum=1512109;
 
 delete from DLBIFO.FctSupSysTechScrcrdMth_rnk
-where DimEmployeeSk=3263254 and DimFsclMthSk=201707 and SupHrNum=1511132;
+where DimEmployeeSk=2294686 and DimFsclMthSk=201707 and SupHrNum=1512109;
 
 UPDATE TGT
 	FROM DLBIFO.FctSupSysTechScrcrdMth TGT, 
@@ -603,6 +597,8 @@ GROUP	BY 1) c
 	  
  --  SELECT 'Tier 5 (Consistently Exceeds)','Tier 4 (Sometimes Exceeds)',	'Tier 3 (Consistently Meets)','Tier 2 (Sometimes Meets)','Tier 1 (Does Not Meet)'
 	--INTO V_TIER_5, V_TIER_4, V_TIER_3, V_TIER_2, V_TIER_1;
+select count(SupHrNum),SupHrNum,FsclMthSeqNum from DLBIFO.FctSupSysTechScrcrdMth group by SupHrNum,FsclMthSeqNum  having count(SupHrNum)>1;
+
 
 			UPDATE 	FCT
 	FROM	DLBIFO.FctSupSysTechScrcrdMth	FCT,
@@ -644,7 +640,8 @@ GROUP	BY 1) c
 select * from DLBIFO.LdSpFctSupSysTechScrcrdMth001;
 select * from 		DLBIFO.FctSupSysTechScrcrdMth;
 
-
+drop table DLBIFO.update_carva_sup;
+drop table DLBIFO.update_carva_tech;
 rename table DLBIFO.FctSupSysTechScrcrdMth to DLBIFO.update_carva_sup;
 rename table DLBIFO.FctSysTechScrcrdMth to DLBIFO.update_carva_tech;		
 
@@ -652,7 +649,20 @@ rename table DLBIFO.FctSysTechScrcrdMth to DLBIFO.update_carva_tech;
 	
 	
 	
+	--XbiMigration
+	/*
 	
-	
-	
-	
+delete from XbiTbls.FctSysTechScrcrdMth where  FsclMthSeqNum = 211 
+and KMATechCnt = 263 ;
+
+insert into XbiTbls.FctSysTechScrcrdMth 
+select * from DLBIFO.update_carva_tech where
+FsclMthSeqNum = 211 and  KMATechCnt = 263 ;
+
+delete from XbiTbls.FctSupSysTechScrcrdMth where  FsclMthSeqNum = 211 
+and TechSrcKMAref = 68 ;
+
+insert into XbiTbls.FctSupSysTechScrcrdMth
+select * from DLBIFO.update_carva_sup where  FsclMthSeqNum = 211 
+and TechSrcKMAref = 68 ;*/
+
