@@ -125,19 +125,21 @@ delete from DLBIFO.FctSysTechScrcrdMth;
 insert into DLBIFO.FctSysTechScrcrdMth_rnk
 select * from dlbifo.CARVA
 where
-hrnum in ('1512119', '1512631', '1507698', '1507785', '1507816', '1507891', '1510116', '1510845', '1512003', '1507630', '1507690', '1515136', '1510565', '1507804', '1515135', '1507649', '1515184', '1507908', '1515733', '1517835', '1510844', '1519590', '1511834', '1516617', '1517147', '1514990', '1507744', '1514512', '1507700', '1512748', '1512085', '1507788', '1514311', '1513051', '1522324', '1515046', '1507818')
+hrnum in('1512119', '1512631', '1507698', '1507785', '1507816', '1507891', '1510116', '1510845', '1512003', '1507630', '1507690', '1515136', '1510565', '1507804', '1515135', '1507649', '1515184', '1507908', '1515733', '1517835', '1510844', '1519590', '1511834', '1516617', '1517147', '1514990', '1507744', '1514512', '1507700', '1512748', '1512085', '1507788', '1514311', '1513051', '1522324', '1515046', '1507818')
 
 ;
 
 
 insert into DLBIFO.FctSysTechScrcrdMth_rnk
-select * from XbiTblsV.FctSysTechScrcrdMth where HrNum not in ('1512119', '1512631', '1507698', '1507785', '1507816', '1507891', '1510116', '1510845', '1512003', '1507630', '1507690', '1515136', '1510565', '1507804', '1515135', '1507649', '1515184', '1507908', '1515733', '1517835', '1510844', '1519590', '1511834', '1516617', '1517147', '1514990', '1507744', '1514512', '1507700', '1512748', '1512085', '1507788', '1514311', '1513051', '1522324', '1515046', '1507818')
-and      FsclMthSeqNum BETWEEN 205 AND COALESCE(211 ,211 - 2);
+select * from XbiTblsV.FctSysTechScrcrdMth where HrNum not in('1512119', '1512631', '1507698', '1507785', '1507816', '1507891', '1510116', '1510845', '1512003', '1507630', '1507690', '1515136', '1510565', '1507804', '1515135', '1507649', '1515184', '1507908', '1515733', '1517835', '1510844', '1519590', '1511834', '1516617', '1517147', '1514990', '1507744', '1514512', '1507700', '1512748', '1512085', '1507788', '1514311', '1513051', '1522324', '1515046', '1507818')
+
+and      FsclMthSeqNum BETWEEN 205 AND COALESCE(212 ,211 - 2);
 
 
 insert into DLBIFO.FctSysTechScrcrdMth_rnk
 select * from XbiTblsV.FctSysTechScrcrdMth where HrNum  in ('1512119', '1512631', '1507698', '1507785', '1507816', '1507891', '1510116', '1510845', '1512003', '1507630', '1507690', '1515136', '1510565', '1507804', '1515135', '1507649', '1515184', '1507908', '1515733', '1517835', '1510844', '1519590', '1511834', '1516617', '1517147', '1514990', '1507744', '1514512', '1507700', '1512748', '1512085', '1507788', '1514311', '1513051', '1522324', '1515046', '1507818')
-and      FsclMthSeqNum BETWEEN 205 AND 207;
+
+and      FsclMthSeqNum BETWEEN 206 AND 208;
 
 
 --sel * from DLBIFO.FctSysTechScrcrdMth_rnk;
@@ -196,7 +198,7 @@ delete DLBIFO.LDSpFctSysTechScrcrdMth001;
         HrNum,
         AVG(TotScr) AVG_TOTAL_SCORE
         FROM     DLBIFO.FctSysTechScrcrdMth_rnk
-        WHERE FsclMthSeqNum BETWEEN 209 AND COALESCE(211 ,211 - 2)
+        WHERE FsclMthSeqNum BETWEEN 210 AND COALESCE(212 ,212 - 2)
         GROUP BY HrNum
         ) RNK3
         ON RNK3.HrNum = FCT.HrNum
@@ -206,7 +208,7 @@ delete DLBIFO.LDSpFctSysTechScrcrdMth001;
         HrNum,
         AVG(TotScr) AVG_TOTAL_SCORE
         FROM     DLBIFO.FctSysTechScrcrdMth_rnk
-        WHERE     FsclMthSeqNum BETWEEN 205 AND COALESCE(211 ,211 - 2)
+        WHERE     FsclMthSeqNum BETWEEN 205 AND COALESCE(212 ,212 - 2)
         GROUP BY     HrNum
         ) YTD
         ON YTD.HrNum = FCT.HrNum
@@ -217,11 +219,11 @@ delete DLBIFO.LDSpFctSysTechScrcrdMth001;
         COUNT(*) TECH_COUNT
         FROM     DLBIFO.FctSysTechScrcrdMth_rnk TSC
         LEFT JOIN (SELECT HrNum, OldTechKmaDesc, MAX(DimEmployeeSk) MaxSk FROM XBITblsV.DimEmployeeCV GROUP BY 1,2) MA ON (TSC.HrNum=MA.HrNum) -- CID 005
-        WHERE     FsclMthSeqNum = COALESCE(211 ,211 - 2)
+        WHERE     FsclMthSeqNum = COALESCE(212 ,212 - 2)
         GROUP BY   OldTechKMADesc 
         ) CNT
         ON CNT.OldTechKMADesc =  MA.OldTechKMADesc 
-        WHERE FCT.FsclMthSeqNum = COALESCE(211 ,211 - 2);
+        WHERE FCT.FsclMthSeqNum = COALESCE(212 ,212 - 2);
 
 	--	'Tier 5 (Consistently Exceeds)','Tier 4 (Sometimes Exceeds)','Tier 3 (Consistently Meets)','Tier 2 (Sometimes Meets)','Tier 1 (Does Not Meet)'
 		UPDATE 	FCT
@@ -272,7 +274,7 @@ delete DLBIFO.LDSpFctSysTechScrcrdMth001;
 						END,
 		KMATechCnt = RNK.KMATechCnt
 	WHERE FCT.HrNum = RNK.HrNum
-	AND FCT.FsclMthSeqNum = COALESCE(211 ,211 - 2);
+	AND FCT.FsclMthSeqNum = COALESCE(212 ,212 - 2);
 	
 	
 	  	UPDATE TGT
@@ -282,7 +284,7 @@ delete DLBIFO.LDSpFctSysTechScrcrdMth001;
     	JOIN XBITblsV.DimCalMth b ON (a.DimFsclMthSk=b.DimCalMthSk)
        	 JOIN (SELECT YearNum, MAX(DimCalMthSk) MaxMthSk FROM XBITblsV.DimCalMth GROUP BY 1) c ON (b.YearNum-1=c.YearNum)
             	LEFT OUTER JOIN XbiTblsV.FctSysTechScrcrdMth d ON (a.HrNum=d.HrNum AND c.MaxMthSk=d.DimFsclMthSk)
-  	WHERE a.FsclMthSeqNum = COALESCE(211 ,211 - 2) )SRC
+  	WHERE a.FsclMthSeqNum = COALESCE(212 ,212 - 2) )SRC
   	SET
  	 KMATierPrevYr = SRC.KMATierPrevYr
  	 WHERE
@@ -300,24 +302,16 @@ delete DLBIFO.LDSpFctSysTechScrcrdMth001;
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
 	--check
 	
 	select A.*,B.* from
-		(select HrNum,KMARnk,KMATier from XbiTblsV.FctSysTechScrcrdMth where FsclMthSeqNum=211) as A
+		(select HrNum,KMARnk,KMATier from XbiTblsV.FctSysTechScrcrdMth where FsclMthSeqNum=212) as A
 	
 	inner join
 	
 		(select HrNum,KMARnk,KMATier  from DLBIFO.FctSysTechScrcrdMth) as B on A.HrNum=B.Hrnum;
 		
-		select HrNum,KMARnk,KMATier from XbiTblsV.FctSysTechScrcrdMth where FsclMthSeqNum=211
+		select HrNum,KMARnk,KMATier from XbiTblsV.FctSysTechScrcrdMth where FsclMthSeqNum=212
 	minus
 		select HrNum,KMARnk,KMATier  from DLBIFO.FctSysTechScrcrdMth
 
@@ -440,13 +434,13 @@ suphrnum in ('1508128', '1511132', '1507672')
 insert into DLBIFO.FctSupSysTechScrcrdMth_rnk
 select * from XbiTblsV.FctSupSysTechScrcrdMth where 
 suphrnum not in ('1508128', '1511132', '1507672')
-and      FsclMthSeqNum BETWEEN 205 AND COALESCE(211 ,211 - 2);
+and      FsclMthSeqNum BETWEEN 205 AND COALESCE(212 ,211 - 2);
 
 
 insert into DLBIFO.FctSupSysTechScrcrdMth_rnk
 select * from XbiTblsV.FctSupSysTechScrcrdMth where 
 suphrnum in ('1508128', '1511132', '1507672')
-and      FsclMthSeqNum BETWEEN 205 AND 207;
+and      FsclMthSeqNum BETWEEN 206 AND 208;
 
 
 
@@ -469,6 +463,17 @@ select * from DLBIFO.FctSupSysTechScrcrdMth_rnk;
 
 --delete duplicated SupHrNum
 select count(SupHrNum),SupHrNum,FsclMthSeqNum from DLBIFO.FctSupSysTechScrcrdMth group by SupHrNum,FsclMthSeqNum  having count(SupHrNum)>1;
+
+
+drop table  DLBIFO.FctSupSysTechScrcrdMth_2;
+create multiset table DLBIFO.FctSupSysTechScrcrdMth_2 as (select * from DLBIFO.FctSupSysTechScrcrdMth)with data;
+delete DLBIFO.FctSupSysTechScrcrdMth ; 
+
+insert into DLBIFO.FctSupSysTechScrcrdMth
+select distinct * from DLBIFO.FctSupSysTechScrcrdMth_2;
+
+select count(SupHrNum),SupHrNum,FsclMthSeqNum from DLBIFO.FctSupSysTechScrcrdMth group by SupHrNum,FsclMthSeqNum  having count(SupHrNum)>1;
+
 
 select * from  DLBIFO.FctSupSysTechScrcrdMth where SupHrNum=1512109;
 
@@ -502,7 +507,7 @@ UPDATE TGT
 	SET TechSrcKMARef = COALESCE(SRC.TechSrcKMARef,'-1')
 	WHERE 
 	TGT.DimEmployeeSk = SRC.DimEmployeeSk
-  	AND TGT.FsclMthSeqNum = 211
+  	AND TGT.FsclMthSeqNum = 212
  	 ;
 
 select * from DLBIFO.FctSupSysTechScrcrdMth;
@@ -563,20 +568,20 @@ delete DLBIFO.LdSpFctSupSysTechScrcrdMth001;
       --ON FCT.SupHrNum = NDS.SupHrNum  --005 Join not required as base table is derived from this.
       LEFT JOIN (	SELECT 	SupHrNum, CAST(AVG(CurMthTotScr) AS DECIMAL(10,6)) AvgTotScr  --005
 									FROM 	DLBIFO.FctSupSysTechScrcrdMth
-									WHERE 	FsclMthSeqNum BETWEEN 205 AND 211
+									WHERE 	FsclMthSeqNum BETWEEN 205 AND 212
 									GROUP BY 	SupHrNum
 								) YTD
       ON FCT.SupHrNum = YTD.SupHrNum
       LEFT JOIN (
 									SELECT 	SupHrNum, CAST(AVG(CurMthTotScr) AS DECIMAL(10,6))AvgTotScr  --005
 									FROM 	DLBIFO.FctSupSysTechScrcrdMth
-									WHERE FsclMthSeqNum BETWEEN 209 AND 211
+									WHERE FsclMthSeqNum BETWEEN 210 AND 212
 									GROUP BY SupHrNum
 								) RNK3
       ON FCT.SupHrNum = RNK3.SupHrNum
       LEFT JOIN
             (
-              SELECT a.SupHrNum, CASE WHEN 211 <=204 THEN NULL ELSE d.YTDTotScr END PrevYrTotScr -- CID002
+              SELECT a.SupHrNum, CASE WHEN 212 <=204 THEN NULL ELSE d.YTDTotScr END PrevYrTotScr -- CID002
  	            FROM DLBIFO.FctSupSysTechScrcrdMth a
               JOIN XBITBLSV.DimCalMth b 
 	ON	(a.DimFsclMthSk=b.DimCalMthSk)
@@ -588,11 +593,11 @@ GROUP	BY 1) c
             	LEFT OUTER JOIN  XbiTblsV.FctSupSysTechScrcrdMth d 
 	ON	(a.SupHrNum=d.SupHrNum 
 	AND	c.MaxMthSk=d.DimFsclMthSk)
-  	           WHERE a.FsclMthSeqNum = 211
+  	           WHERE a.FsclMthSeqNum = 212
             )PREVYR
       ON FCT.SupHrNum = PREVYR.SupHrNum
     
-      WHERE FCT.FsclMthSeqNum = 211;
+      WHERE FCT.FsclMthSeqNum = 212;
 	  select * from DLBIFO.LdSpFctSupSysTechScrcrdMth001;
 	  
  --  SELECT 'Tier 5 (Consistently Exceeds)','Tier 4 (Sometimes Exceeds)',	'Tier 3 (Consistently Meets)','Tier 2 (Sometimes Meets)','Tier 1 (Does Not Meet)'
@@ -634,7 +639,7 @@ select count(SupHrNum),SupHrNum,FsclMthSeqNum from DLBIFO.FctSupSysTechScrcrdMth
   	TotScr3Mth = RNK.TotScr3Mth, 
   	PrevYrTotScr = RNK.PrevYrTotScr
   	WHERE FCT.SupHrNum = RNK.SupHrNum
-	AND FCT.FsclMthSeqNum = COALESCE(211 ,211 - 2);
+	AND FCT.FsclMthSeqNum = COALESCE(212 ,211 - 2);
 		
 
 select * from DLBIFO.LdSpFctSupSysTechScrcrdMth001;
@@ -645,9 +650,9 @@ drop table DLBIFO.update_carva_tech;
 rename table DLBIFO.FctSupSysTechScrcrdMth to DLBIFO.update_carva_sup;
 rename table DLBIFO.FctSysTechScrcrdMth to DLBIFO.update_carva_tech;		
 
-	
-	
-	
+
+	select * from  DLBIFO.update_carva_sup where CurMthTier is not null and execbatchid=1 order by CurMthtotScr desc;
+	select * from DLBIFO.update_carva_tech where HrNum= '1512119' and FsclMthSeqNum=212 and KMATier is not null and execbatchid=1 order by totscr desc;	
 	
 	--XbiMigration
 	/*
