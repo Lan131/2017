@@ -16,7 +16,7 @@ corrplot(M, order="hclust", addrect=2, col=wb, bg="gold2")
 
 
 attach(data)
-fit=randomForest(x=sapply(data,as.numeric)[,3:5],y=data[,2],data=data)
+fit=randomForest(x=sapply(data,as.numeric)[,3:5],y=as.numeric(data[,2]),data=data)
 info=fit$importance
 info=info[order(fit$importance),]
 varImpPlot(fit)
