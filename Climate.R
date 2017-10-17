@@ -39,7 +39,7 @@ p
 #Year	AVG_Temp	Industrial Output	rand	Avg VEI Per Year	Sourse
 #2001	0.52	3569.29183	0.721075322	2.25	https://www.ngdc.noaa.gov/nndc/struts/results?ge_23=2010&le_23=2016&type_15=Like&query_15=&op_30=eq&v_30=&type_16=Like&query_16=&op_29=eq&v_29=&type_31=EXACT&query_31=None+Selected&le_17=&ge_18=&le_18=&ge_17=&op_20=eq&v_20=&ge_7=&le_7=&bt_24=&st_24=&ge_25=&le_25=&bt_26=&st_26=&ge_27=&le_27=&type_13=Like&query_13=&type_12=Exact&query_12=&type_11=Exact&query_11=&display_look=50&t=102557&s=50
 #2002	0.54	3591.47359	0.099408242	2.83	https://data.oecd.org/gdp/gross-domestic-product-gdp.htm
-#2003	0.56	3651.90323	0.311825598	3	
+#2003	0.56	3651.90323	0.311825598	3	 https://climate.nasa.gov/vital-signs/global-temperature/
 #2004	0.59	3733.52661	0.982068619	2.33	
 #2005	0.61	3905.35409	0.604361875	3.5	
 #2006	0.62	4023.99899	0.209308396	2	
