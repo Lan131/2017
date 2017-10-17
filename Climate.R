@@ -1,3 +1,20 @@
+data=na.roughfix(data)
+
+col1 <- colorRampPalette(c("#7F0000","red","#FF7F00","yellow","white", 
+                           "cyan", "#007FFF", "blue","#00007F"))
+col2 <- colorRampPalette(c("#67001F", "#B2182B", "#D6604D", "#F4A582", "#FDDBC7",
+                           "#FFFFFF", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC", "#053061"))  
+col3 <- colorRampPalette(c("red", "white", "blue")) 
+col4 <- colorRampPalette(c("#7F0000","red","#FF7F00","yellow","#7FFF7F", 
+                           "cyan", "#007FFF", "blue","#00007F"))   
+
+M=cor(sapply(data[,2:5],as.numeric))
+
+corrplot.mixed(M, upper="ellipse", lower="number",col=col3(200))
+wb <- c("white","black")
+corrplot(M, order="hclust", addrect=2, col=wb, bg="gold2")
+
+
 attach(data)
 fit=randomForest(x=sapply(data,as.numeric)[,3:5],y=data[,2],data=data)
 info=fit$importance
