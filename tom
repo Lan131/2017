@@ -14,22 +14,22 @@ knitr::opts_chunk$set(echo = TRUE)
 
 
 ```{r, echo=F}
-data_master=read.csv(file="Toms_data_consl.csv",header=TRUE)
+#data_master=read.csv(file="Toms_data_consl.csv",header=TRUE)
 
-tot_reg=max(data_master$Fit_num)
+#tot_reg=max(data_master$Fit_num)
 library(plotly)
 library(gvlma)
 library(MASS)
 library(car)
 library(ggplot2)
-
+library(corrplot)
 diagPlot<-function(model){
     p1<-ggplot(model, aes(.fitted, .resid))+geom_point()
     p1<-p1+stat_smooth(method="loess")+geom_hline(yintercept=0, col="red", linetype="dashed")
     p1<-p1+xlab("Fitted values")+ylab("Residuals")
     p1<-p1+ggtitle("Residual vs Fitted Plot")+theme_bw()
        
-    p2<-ggplot(model, aes(qqnorm(.stdresid)[[1]], .stdresid))+geom_point(na.rm = TRUE)
+    p2<-ggplot(model, aes(qqnorm(.stdresid)[[1]], .stdresid))+geom_point(na.rm = TRUE)+geom_smooth(method = "lm",se = TRUE)
     p2<-p2+geom_abline()+xlab("Theoretical Quantiles")+ylab("Standardized Residuals")
     p2<-p2+ggtitle("Normal Q-Q")+theme_bw()
 
@@ -57,8 +57,15 @@ diagPlot<-function(model){
     p6<-p6+theme_bw()
     
     return(list(rvfPlot=p1, qqPlot=p2, sclLocPlot=p3, cdPlot=p4, rvlevPlot=p5, cvlPlot=p6))
-}
+    col1 <- colorRampPalette(c("#7F0000","red","#FF7F00","yellow","white", 
+                           "cyan", "#007FFF", "blue","#00007F"))
+col2 <- colorRampPalette(c("#67001F", "#B2182B", "#D6604D", "#F4A582", "#FDDBC7",
+                           "#FFFFFF", "#D1E5F0", "#92C5DE", "#4393C3", "#2166AC", "#053061"))  
+col3 <- colorRampPalette(c("red", "white", "blue")) 
+col4 <- colorRampPalette(c("#7F0000","red","#FF7F00","yellow","#7FFF7F",  "cyan", "#007FFF", "blue","#00007F"))   
 
+}
+ wb <- c("white","black")
 ```
 
 
@@ -140,53 +147,102 @@ diagPlot<-function(model){
 data01=read.csv("01_Stiffness.csv",header=T)
 data02=read.csv("02_Onset Yield Moment.csv",header=T)
 data03=read.csv("03_Wall Stress UL.csv",header=T)
+```
 
-plot(data01)
-plot(data02)
-plot(data03)
+##View the data
+```{r , echo=FALSE,warning =F,messages=F,errors=F}
+
 head(data01) #Stiffness.of.Connection
 head(data02) #Onset.Yield.Moment
 head(data03) #Von.Mises.Stress.Under.Unit.Load
-
-
-
-
-
 ```
+
+
+
+##Notes
+* Cooks Distance > 1 indicates an influential or outlier. None of these models have this.
+* All Models are significent and their factors are significent at at least an alpha=.1 level.
+* VIF test for multicolinearity is problematic with VIF values above 10. No factors had this issue.
+* Breusch-Pagan Test Non-constant Variance showed no data with non constant variance.
+* Durbin Watson Test for autocorrelation showed no autocorrelation amoung data.
+* crPlots give partial fits for individual predictors onto response.
+
 
 
 ```{r , echo=FALSE,warning =F,messages=F,errors=F}
 fit=lm(Stiffness.of.Connection~.,data=data01)
-plot(data01)
+```
 
-diagPlot(fit)
 
-ceresPlots(fit)
-gvmodel <- gvlma(fit) 
-summary(gvmodel)
+
+### Diagnostic Plots and Summary
+
+```{r , echo=FALSE,warning =F,messages=F,errors=F}
+ 
+crPlots(fit)
+#ceresPlots(fit)
+#summary(gvlma(fit) )
+#plot(gvlma(fit))
+#anova(fit)
 summary(fit)
+#durbinWatsonTest(fit) #good
+#ncvTest(fit) #good
+#spreadLevelPlot(fit)
+#outlierTest(fit)
+#car::vif(fit)
+#influenceIndexPlot(fit)
+#avPlots(fit)
+
 ```
 
 ```{r , echo=FALSE,warning =F,messages=F,errors=F}
 fit=lm(Onset.Yield.Moment~.,data=data02)
-plot(data02)
+```
 
-diagPlot(fit)
+### Diagnostic Plots and Summary
 
+```{r , echo=FALSE,warning =F,messages=F,errors=F}
+
+crPlots(fit)
 #ceresPlots(fit)
-#gvmodel <- gvlma(fit) 
-#summary(gvmodel)
+#summary(gvlma(fit) )
+#plot(gvlma(fit))
+#anova(fit)
 summary(fit)
+#durbinWatsonTest(fit) #good
+#ncvTest(fit) #good
+#spreadLevelPlot(fit)
+#outlierTest(fit)
+#car::vif(fit)
+#influenceIndexPlot(fit)
+#avPlots(fit)
 ```
 
 ```{r , echo=FALSE,warning =F,messages=F,errors=F}
 fit=lm(Von.Mises.Stress.Under.Unit.Load~.,data=data03)
-plot(data03)
+```
 
-diagPlot(fit)
 
+### Diagnostic Plots and Summary
+
+```{r , echo=FALSE,warning =F,messages=F,errors=F}
+
+#diagPlot(fit) #>1 = bad
+ 
+crPlots(fit)
 #ceresPlots(fit)
-#gvmodel <- gvlma(fit) 
-#summary(gvmodel)
+#summary(gvlma(fit) )
+#plot(gvlma(fit))
+#anova(fit)
 summary(fit)
+#print("Test for autocorrelation, low p value is good")
+#durbinWatsonTest(fit) #good
+#print("Homoscedasticity: Score Test for Non-Constant Error Variance. Low p value is good")
+#ncvTest(fit) #good
+#spreadLevelPlot(fit)
+#print("outlier test. Low p value is bad")
+#outlierTest(fit)
+#car::vif(fit)
+#influenceIndexPlot(fit)
+#avPlots(fit)
 ```
