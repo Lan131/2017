@@ -69,77 +69,6 @@ col4 <- colorRampPalette(c("#7F0000","red","#FF7F00","yellow","#7FFF7F",  "cyan"
 ```
 
 
-```{r , echo=FALSE,warning =F,messages=F,errors=F}
-##General Notes and Summary
-
-#* Linear regressions are performed.
-#* Linked Function failure indicates non linearity. In this case a quadratic regression is fit.
-#* Quadratic fits have adjusted X values such that Xadj=X-mean(X). This is to prevent a regression issue around colinear predictors. Equations are given in terms of Xadj because the author is lazy.
-#* Regression 23, 38, 46, 64 , 77 are insignificent. Ie There is no evidence for a relationship between X and Y.
-#* Regression 37, 69 have a insignifient X but a significent X^2. It is not logically possible for this to occur. Both are included in this case.
-#* In the event that the predictor is non significent (asterisks next to predictors indicate significence), no relationship may exist or a simple average is the best predictor.
-#* Loess is locally weighted scatter plot smoothing. It is essentially a smoother moving average. It is included to highlight the fit.
-#* No regression is done if the response is constant. The equation would just be y=constant. Similarly no constant predictor is included because it's coefficent is 0.
-# for( i in 1:tot_reg)
-#   
-#   
-# {
-# 
-# 
-#   sub=subset(data_master,data_master$Fit_num==i)
-# 
-#   if(var(sub$Y)>0)
-#   {
-#   fit=lm(Y~X1,data=sub)
-#   print(paste("Fit for Regression",i,sep=" "))
-#   titl1=paste("Regression Equation: y=",toString(round(fit$coefficients[[2]],digits=3)),"x+",toString(round(fit$coefficients[[1]],digits=3)),sep="")
-#     if(gvlma(fit)$GlobalTest$DirectionalStat3[[3]]==1)
-#       {
-#       #if(min(sub$Y)<0)
-#       #{
-#       #  offset=1+-1*min(sub$Y)
-#       #  sub$Y= sub$Y+offset
-#      # }else{offset=0}
-#      # df=boxcox(fit, lambda = seq(-2, 2, 1/10),data=sub)
-#      # L=df$x[which.max(df$y)]
-#       #if(L<0)
-#       #{sub=subset(sub,sub$Y!=0)}
-#       #depvar.transformed <- yjPower(sub$Y, L)
-#       sub$X1=sub$X1-mean(sub$X1)
-#       fit=lm(Y~X1+I(X1^2),data=sub) 
-#       #titl2= paste("Regression Equation: (y-",toString(offset),")^",round(L,digits=3),"=",toString(round(fit$coefficients[[2]],digits=3)),"x",L,toString(round(fit$coefficients[[1]],digits=3)),sep="")
-#       titl2= paste("Regression Equation: y=",toString(round(fit$coefficients[[3]],digits=3)),"xadj^2+",toString(round(fit$coefficients[[2]],digits=3)),"xadj+",toString(round(fit$coefficients[[1]],digits=3)),sep="")
-#       
-#       summary(gvlma(fit) )
-#       g=ggplot(data = sub, aes(x = X1, y = Y)) +
-#       stat_smooth(method = 'glm', aes(colour = 'lm'),formula=y ~ poly(x, 2)) +
-#       stat_smooth(method = 'loess', aes(colour = 'loess')) +
-#       geom_point(size=2, shape=23)+
-#       labs(title = titl2 )
-#     print(g) 
-#         }else{
-#   
-#     summary(fit)
-#       print(summary(fit))
-#       g=ggplot(data = sub, aes(x = X1, y = Y)) +
-#       stat_smooth(method = 'lm', aes(colour = 'linear'), se = T) +
-#       stat_smooth(method = 'loess', aes(colour = 'loess')) +
-#       geom_point(size=2, shape=23)+
-#       labs(title = titl1 )
-#     print(g)}
-# 
-#   
-#   
-#   }else{
-#     
-#     
-#     print(paste("Variance in response is zero for fit",i,sep=" "))
-#   }
-#   
-# }
-
-```
-
 
 ```{r , echo=FALSE,warning =F,messages=F,errors=F}
 
@@ -155,6 +84,12 @@ data03=read.csv("03_Wall Stress UL.csv",header=T)
 head(data01) #Stiffness.of.Connection
 head(data02) #Onset.Yield.Moment
 head(data03) #Von.Mises.Stress.Under.Unit.Load
+
+data01$B=data01$B-mean(data01$B)
+
+
+data02$B=data02$B-mean(data02$B)
+
 ```
 
 
@@ -170,7 +105,8 @@ head(data03) #Von.Mises.Stress.Under.Unit.Load
 
 
 ```{r , echo=FALSE,warning =F,messages=F,errors=F}
-fit=lm(Stiffness.of.Connection~.,data=data01)
+
+fit=lm(Stiffness.of.Connection~e+I(B^2)+B+t,data=data01)
 ```
 
 
@@ -180,23 +116,14 @@ fit=lm(Stiffness.of.Connection~.,data=data01)
 ```{r , echo=FALSE,warning =F,messages=F,errors=F}
  
 crPlots(fit)
-#ceresPlots(fit)
-#summary(gvlma(fit) )
-#plot(gvlma(fit))
-#anova(fit)
+
 summary(fit)
-#durbinWatsonTest(fit) #good
-#ncvTest(fit) #good
-#spreadLevelPlot(fit)
-#outlierTest(fit)
-#car::vif(fit)
-#influenceIndexPlot(fit)
-#avPlots(fit)
+
 
 ```
 
 ```{r , echo=FALSE,warning =F,messages=F,errors=F}
-fit=lm(Onset.Yield.Moment~.,data=data02)
+fit=lm(Onset.Yield.Moment~e+I(B^2)+B+t,data=data02)
 ```
 
 ### Diagnostic Plots and Summary
@@ -219,7 +146,7 @@ summary(fit)
 ```
 
 ```{r , echo=FALSE,warning =F,messages=F,errors=F}
-fit=lm(Von.Mises.Stress.Under.Unit.Load~.,data=data03)
+fit=lm(Von.Mises.Stress.Under.Unit.Load~e+B+t,data=data03)
 ```
 
 
@@ -230,19 +157,62 @@ fit=lm(Von.Mises.Stress.Under.Unit.Load~.,data=data03)
 #diagPlot(fit) #>1 = bad
  
 crPlots(fit)
-#ceresPlots(fit)
-#summary(gvlma(fit) )
-#plot(gvlma(fit))
-#anova(fit)
+
 summary(fit)
-#print("Test for autocorrelation, low p value is good")
-#durbinWatsonTest(fit) #good
-#print("Homoscedasticity: Score Test for Non-Constant Error Variance. Low p value is good")
-#ncvTest(fit) #good
-#spreadLevelPlot(fit)
-#print("outlier test. Low p value is bad")
-#outlierTest(fit)
-#car::vif(fit)
-#influenceIndexPlot(fit)
-#avPlots(fit)
+
+```
+
+
+
+```{r , echo=FALSE,warning =F,messages=F,errors=F}
+data04=read.csv("04_Loaded Sidewall OY.csv",header=T)
+data05=read.csv("05_Unloaded Sidewall OY.csv",header=T)
+data06=read.csv("06_Loaded Sidewall UL.csv",header=T)
+data07=read.csv("07_Unloaded Sidewall UL.csv",header=T)
+
+
+
+```
+
+```{r , echo=FALSE,warning =F,messages=F,errors=F}
+head(data04)
+#fit=lm(Loaded.Sidewall.OY~.,data=data04)
+#crPlots(fit)
+
+#summary(fit)
+
+print("T is insignificent refit without it.")
+data04$e=data04$e-mean(data04$e)
+fit=lm(Loaded.Sidewall.OY~I(e^2)+e+B,data=data04)
+crPlots(fit)
+
+summary(fit)
+
+
+```
+
+```{r , echo=FALSE,warning =F,messages=F,errors=F}
+head(data05)
+fit=lm(Unloaded.Sidewall.OY~.,data=data05)
+crPlots(fit)
+
+summary(fit)
+```
+
+```{r , echo=FALSE,warning =F,messages=F,errors=F}
+print("b and e not significent")
+head(data06)
+fit=lm(Loaded.Sidewall.Unit.Load~t,data=data06)
+crPlots(fit)
+
+summary(fit)
+```
+
+```{r , echo=FALSE,warning =F,messages=F,errors=F}
+
+head(data07)
+fit=lm(Unloaded.Sidewall.Unit.Load~.,data=data07)
+crPlots(fit)
+
+summary(fit)
 ```
