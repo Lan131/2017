@@ -50,5 +50,5 @@ else:
 #    x=np.array(data['first']).values, y=np.array(data['second']).values, colorscale=colorscale,
 #    hist_color='rgb(255, 237, 222)', point_size=3
 #)
-
+#https://stackoverflow.com/questions/19917545/comparing-two-pandas-dataframes-for-differences
 #py.plot(fig, filename='histogram_subplots')
