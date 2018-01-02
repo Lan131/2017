@@ -1,8 +1,10 @@
+rm(list=ls())
+
 #install.packages("RODBC")
 library(RODBC)
 library(ggplot2)
 library(dplyr)
-ch <- odbcDriverConnect("Driver=Teradata;DBCName=TDXDW;UID=p2738395;PWD=Charter123##")
+ch <- odbcDriverConnect("Driver=Teradata;DBCName=TDXDW;UID=p2738395;PWD=Charter123")
 
 Sep_bbt=as.data.frame(sqlQuery(ch, paste('select * from XbiAqIntRptV.RptBBTScrcrdTechMthLgcy where Thrufsclmthsk=201709;')))
 Oct_bbt=as.data.frame(sqlQuery(ch, paste('select * from XbiAqIntRptV.RptBBTScrcrdTechMthLgcy where Thrufsclmthsk=201710')))
@@ -27,8 +29,40 @@ Sep_fct= filter(Fct_BBT,DimFsclMthSk== 201709)
 
 
 raw=read.csv("BBT_BHN_AGG_20171223.csv",header=T)
-a1 <- group_by(raw, SCMonthYear) %>% summarise(a2, arr = count(SCMonthYear, na.rm = TRUE))
+a1 = group_by(raw, SCMonthYear) %>% select(IcomsID,SCMonthYear)%>%summarise( n_distinct(IcomsID))
 
+plot(a1)
+
+PLD_Oct=as.data.frame(sqlQuery(ch, paste('select * from XBIAqIntRptV.PldBBTScrcrdSumDlyLgcy where ScMonthYear=201710;')))
+PLD_Sep=as.data.frame(sqlQuery(ch, paste('select * from XBIAqIntRptV.PldBBTScrcrdSumDlyLgcy where ScMonthYear=201709;')))
+a2 = group_by(PLD_Sep, SCMonthYear) %>% select(TechID,SCMonthYear)%>%summarise( n_distinct(TechID))
+
+a3 = group_by(PLD_Oct, SCMonthYear) %>% select(TechID,SCMonthYear)%>%summarise( n_distinct(TechID))
+
+PLD_Oct_cnt=as.data.frame(sqlQuery(ch, paste('select count(*) ,TechID,ScMonthYear from XBIAqIntRptV.PldBBTScrcrdSumDlyLgcy where ScMonthYear=201710 group by TechID, ScMonthYear;')))
+PLD_Sep_cnt=as.data.frame(sqlQuery(ch, paste('select count(*) ,TechID,ScMonthYear from XBIAqIntRptV.PldBBTScrcrdSumDlyLgcy where ScMonthYear=201709 group by TechID, ScMonthYear;')))
+
+hist(PLD_Oct_cnt[,1])
+hist(PLD_Sep_cnt[,1])
+
+
+dat <- data.frame(x = c(PLD_Sep_cnt[,1], PLD_Oct_cnt[,1]),month = factor(rep(9:10, c(length(PLD_Sep_cnt[,1]),length(PLD_Oct_cnt[,1])))))
+ggplot(dat, aes(x=x, fill=month)) + geom_histogram(alpha=0.5, position="identity")+ggtitle("Distinct TechIDs in PLD")
+
+
+
+
+PLD_Nov_cnt=as.data.frame(sqlQuery(ch, paste('select count(*) ,TechID,ScMonthYear from XBIAqIntRptV.PldBBTScrcrdSumDlyLgcy where ScMonthYear=201711 group by TechID, ScMonthYear;')))
+
+dat <- data.frame(x = c( PLD_Oct_cnt[,1],PLD_Nov_cnt[,1]),month = factor(rep(10:11, c(length(PLD_Oct_cnt[,1]),length(PLD_Nov_cnt[,1])))))
+ggplot(dat, aes(x=x, fill=month)) + geom_histogram(alpha=0.5, position="identity")+ggtitle("Distinct TechIDs in PLD")
+
+
+PLD_OCT=as.data.frame(sqlQuery(ch, paste('select * from XBIAqIntRptV.PldBBTScrcrdSumDlyLgcy where ScMonthYear=201710;' )))
+
+
+cnt_data=read.csv("counts.csv",header=T)
+plot(cnt_data)
 
 
 #Compare to OCT
