@@ -44,9 +44,9 @@ network = regression(network, optimizer='adam', learning_rate=0.01,
                      loss='categorical_crossentropy', name='target')
 
 # Training
-model = tflearn.DNN(network, tensorboard_verbose=3,tensorboard_dir="C:/Users/Lanier/Desktop")
-model.fit({'input': X}, {'target': Y}, n_epoch=1,
+model = tflearn.DNN(network, tensorboard_verbose=3,tensorboard_dir="C:/Users/Lanier/tmp/tflearn_logs")
+model.fit({'input': X}, {'target': Y}, n_epoch=3,
            validation_set=({'input': testX}, {'target': testY}),
            snapshot_step=100, show_metric=True, run_id='convnet_mnist')
 #!tensorboard --logdir='/tmp/tflearn_logs'
-#!tensorboard --logdir='C:\Users\Lanier\Desktop'
+#!tensorboard --logdir="C:/Users/Lanier/tmp/tflearn_logs"
