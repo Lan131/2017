@@ -1,4 +1,17 @@
 ##https://www.blog.pythonlibrary.org/2018/06/05/creating-pdfs-with-pyfpdf-and-python/
+##```{r setup, include=FALSE}
+##library(reticulate)
+
+##Sys.setenv(RETICULATE_PYTHON = "C:/Users/Lanier/Anaconda2")
+##py_config()
+##```
+
+
+##```{python}
+##import pandas as pd
+##print(2+2)
+
+##```
 ##https://blog.rstudio.com/2018/03/26/reticulate-r-interface-to-python/
 import pandas as pd
 import numpy as np
